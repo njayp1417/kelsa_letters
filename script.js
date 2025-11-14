@@ -30,10 +30,7 @@ class LetterGenerator {
             input.addEventListener('input', () => this.clearFieldError(input));
         });
 
-        // Auto-save to localStorage
-        inputs.forEach(input => {
-            input.addEventListener('input', () => this.autoSave());
-        });
+
 
         // Load saved data on page load
         this.loadSavedData();
@@ -203,16 +200,13 @@ class LetterGenerator {
         return data;
     }
 
-    autoSave() {
-        const formData = this.collectFormData();
-        localStorage.setItem('kelsa_letter_draft', JSON.stringify(formData));
-    }
+
 
     loadSavedData() {
-        // Clear all localStorage on page load/refresh
-        localStorage.removeItem('kelsa_letter_draft');
-        localStorage.removeItem('kelsa_letter_data');
-        localStorage.removeItem('kelsa_letter_temp');
+        // Ensure form is completely empty
+        this.form.reset();
+        this.setDefaultDate();
+        document.getElementById('charCount').textContent = '0';
     }
 
     populateForm(data) {
@@ -372,18 +366,10 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 });
 
-// Clear localStorage on page refresh/reload
-window.addEventListener('beforeunload', () => {
+// Prevent any form data persistence
+window.addEventListener('pageshow', () => {
     localStorage.clear();
+    sessionStorage.clear();
+    document.getElementById('letterForm').reset();
 });
 
-// Handle beforeunload for unsaved changes
-window.addEventListener('beforeunload', (e) => {
-    const draft = localStorage.getItem('kelsa_letter_draft');
-    const saved = localStorage.getItem('kelsa_letter_data');
-    
-    if (draft && draft !== saved) {
-        e.preventDefault();
-        e.returnValue = 'You have unsaved changes. Are you sure you want to leave?';
-    }
-});
