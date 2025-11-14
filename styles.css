@@ -349,7 +349,7 @@ body {
 /* Main Content */
 .main-content {
   max-width: 800px;
-  margin: var(--space-2xl) auto;
+  margin: var(--space-xl) auto var(--space-2xl);
   padding: 0 var(--space-lg);
 }
 
@@ -381,12 +381,12 @@ body {
 
 /* Form Sections */
 .letter-form {
-  padding: var(--space-xl);
+  padding: var(--space-lg);
 }
 
 .form-section {
-  margin-bottom: var(--space-2xl);
-  padding-bottom: var(--space-xl);
+  margin-bottom: var(--space-xl);
+  padding-bottom: var(--space-lg);
   border-bottom: 1px solid var(--gray-200);
 }
 
@@ -454,7 +454,7 @@ body {
 
 .form-group textarea {
   resize: vertical;
-  min-height: 120px;
+  min-height: 80px;
 }
 
 .character-count {

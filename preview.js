@@ -170,14 +170,14 @@ class LetterPreview {
             // Temporarily adjust styles for better PDF rendering
             const originalStyles = this.preparePDFStyles(letterPage);
             
-            // Generate canvas from HTML
+            // Generate canvas from HTML with full height
             const canvas = await html2canvas(letterPage, {
                 scale: 2,
                 useCORS: true,
                 allowTaint: true,
                 backgroundColor: '#ffffff',
                 width: letterPage.offsetWidth,
-                height: letterPage.offsetHeight,
+                height: letterPage.scrollHeight, // Use scrollHeight for full content
                 scrollX: 0,
                 scrollY: 0
             });
@@ -195,11 +195,54 @@ class LetterPreview {
 
             // Calculate dimensions
             const imgWidth = 210; // A4 width in mm
+            const pageHeight = 297; // A4 height in mm
             const imgHeight = (canvas.height * imgWidth) / canvas.width;
             
-            // Add image to PDF
             const imgData = canvas.toDataURL('image/png');
-            pdf.addImage(imgData, 'PNG', 0, 0, imgWidth, imgHeight);
+            
+            // Check if content fits on one page
+            if (imgHeight <= pageHeight) {
+                // Single page - add normally
+                pdf.addImage(imgData, 'PNG', 0, 0, imgWidth, imgHeight);
+            } else {
+                // Multi-page - split content
+                let yPosition = 0;
+                let pageNumber = 1;
+                
+                while (yPosition < imgHeight) {
+                    if (pageNumber > 1) {
+                        pdf.addPage();
+                    }
+                    
+                    // Calculate source coordinates for this page
+                    const sourceY = (yPosition * canvas.height) / imgHeight;
+                    const sourceHeight = Math.min(
+                        (pageHeight * canvas.height) / imgHeight,
+                        canvas.height - sourceY
+                    );
+                    
+                    // Create canvas for this page
+                    const pageCanvas = document.createElement('canvas');
+                    pageCanvas.width = canvas.width;
+                    pageCanvas.height = sourceHeight;
+                    
+                    const pageCtx = pageCanvas.getContext('2d');
+                    pageCtx.drawImage(
+                        canvas,
+                        0, sourceY, canvas.width, sourceHeight,
+                        0, 0, canvas.width, sourceHeight
+                    );
+                    
+                    // Add this page to PDF
+                    const pageImgData = pageCanvas.toDataURL('image/png');
+                    const pageImgHeight = (sourceHeight * imgWidth) / canvas.width;
+                    
+                    pdf.addImage(pageImgData, 'PNG', 0, 0, imgWidth, pageImgHeight);
+                    
+                    yPosition += pageHeight;
+                    pageNumber++;
+                }
+            }
 
             // Generate filename
             const filename = this.generateFilename();
@@ -207,7 +250,7 @@ class LetterPreview {
             // Download PDF
             pdf.save(filename);
             
-            this.showSuccess('PDF generated successfully!');
+            this.showSuccess('Multi-page PDF generated successfully!');
             
         } catch (error) {
             console.error('Error generating PDF:', error);
