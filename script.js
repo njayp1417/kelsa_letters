@@ -209,15 +209,10 @@ class LetterGenerator {
     }
 
     loadSavedData() {
-        const savedDraft = localStorage.getItem('kelsa_letter_draft');
-        if (savedDraft) {
-            try {
-                const data = JSON.parse(savedDraft);
-                this.populateForm(data);
-            } catch (error) {
-                console.error('Error loading saved data:', error);
-            }
-        }
+        // Clear all localStorage on page load/refresh
+        localStorage.removeItem('kelsa_letter_draft');
+        localStorage.removeItem('kelsa_letter_data');
+        localStorage.removeItem('kelsa_letter_temp');
     }
 
     populateForm(data) {
@@ -358,6 +353,9 @@ document.head.appendChild(notificationStyles);
 // Initialize the application
 let letterGenerator;
 document.addEventListener('DOMContentLoaded', () => {
+    // Clear localStorage on every page load
+    localStorage.clear();
+    
     letterGenerator = new LetterGenerator();
     
     // Add smooth animations
@@ -374,11 +372,9 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 });
 
-// Handle page visibility for auto-save
-document.addEventListener('visibilitychange', () => {
-    if (document.hidden && letterGenerator) {
-        letterGenerator.autoSave();
-    }
+// Clear localStorage on page refresh/reload
+window.addEventListener('beforeunload', () => {
+    localStorage.clear();
 });
 
 // Handle beforeunload for unsaved changes
