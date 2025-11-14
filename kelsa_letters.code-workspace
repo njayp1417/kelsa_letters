@@ -1,0 +1,16 @@
+{
+	"folders": [
+		{
+			"path": "../kelsa_letters"
+		},
+		{
+			"path": "../../OneDrive/Desktop/learn/Kelsa-main"
+		},
+		{
+			"path": "."
+		}
+	],
+	"settings": {
+		"liveServer.settings.multiRootWorkspaceName": "kelsa_letters"
+	}
+}

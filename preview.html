@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Letter Preview - Kelsa Letter Generator</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Montserrat:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="preview-styles.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="header-container">
+            <div class="logo-section">
+                <div class="logo-icon">K</div>
+                <div class="logo-text">
+                    <h1>Kelsa Events</h1>
+                    <span>Letter Preview</span>
+                </div>
+            </div>
+            <div class="header-actions">
+                <button class="btn-secondary" onclick="window.history.back()">
+                    <i class="fas fa-arrow-left"></i> Back to Form
+                </button>
+                <button class="btn-primary" onclick="generatePDF()">
+                    <i class="fas fa-download"></i> Download PDF
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Preview Controls -->
+    <div class="preview-controls">
+        <div class="controls-container">
+            <div class="zoom-controls">
+                <button onclick="adjustZoom(-0.1)" class="zoom-btn">
+                    <i class="fas fa-search-minus"></i>
+                </button>
+                <span class="zoom-level">100%</span>
+                <button onclick="adjustZoom(0.1)" class="zoom-btn">
+                    <i class="fas fa-search-plus"></i>
+                </button>
+            </div>
+            <div class="action-controls">
+                <button class="btn-secondary" onclick="editLetter()">
+                    <i class="fas fa-edit"></i> Edit Letter
+                </button>
+                <button class="btn-primary" onclick="generatePDF()">
+                    <i class="fas fa-file-pdf"></i> Generate PDF
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Letter Preview -->
+    <main class="preview-main">
+        <div class="letter-container" id="letterContainer">
+            <div class="letter-page" id="letterPage">
+                <!-- Kelsa Events Letterhead -->
+                <div class="letterhead">
+                    <div class="company-header">
+                        <div class="company-logo">
+                            <div class="logo-circle">K</div>
+                        </div>
+                        <div class="company-info">
+                            <h1 class="company-name">KELSA EVENTS</h1>
+                            <p class="company-tagline">Professional Event Planning & Equipment Rental</p>
+                        </div>
+
+                    </div>
+                </div>
+
+                <!-- Letter Content -->
+                <div class="letter-content">
+                    <!-- Date and Reference -->
+                    <div class="letter-meta">
+                        <div class="letter-date" id="letterDate"></div>
+                        <div class="letter-reference" id="letterReference"></div>
+                    </div>
+
+                    <!-- Recipient Address -->
+                    <div class="recipient-section">
+                        <div class="recipient-name" id="recipientName"></div>
+                        <div class="recipient-title" id="recipientTitle"></div>
+                        <div class="recipient-address" id="recipientAddress"></div>
+                    </div>
+
+                    <!-- Subject -->
+                    <div class="subject-section">
+                        <strong>RE: <span id="letterSubject"></span></strong>
+                    </div>
+
+                    <!-- Salutation -->
+                    <div class="salutation" id="letterSalutation"></div>
+
+                    <!-- Letter Body -->
+                    <div class="letter-body" id="letterBody"></div>
+
+                    <!-- Closing -->
+                    <div class="letter-closing">
+                        <div class="closing-text" id="letterClosing"></div>
+                        
+                        <!-- Signature Area -->
+                        <div class="signature-section">
+                            <div class="signature-image">
+                                <img src="signature.webp" alt="Signature" class="signature-img">
+                            </div>
+                            <div class="signature-line"></div>
+                            <div class="signatory-info">
+                                <div class="signatory-name" id="signatoryName"></div>
+                                <div class="signatory-title">Managing Director</div>
+                                <div class="company-signature">KELSA EVENTS</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Social Media Footer -->
+                <div class="letter-footer">
+                    <div class="footer-wave"></div>
+                    <div class="footer-main">
+                        <div class="footer-brand">
+                            <div class="footer-logo">K</div>
+                            <div class="footer-text">
+                                <h3>KELSA EVENTS</h3>
+                                <p>Creating Memorable Experiences</p>
+                            </div>
+                        </div>
+                        <div class="footer-contacts">
+                            <div class="contact-item">
+                                <div class="contact-icon">
+                                    <i class="fas fa-phone"></i>
+                                </div>
+                                <span>0913 463 6775</span>
+                            </div>
+                            <div class="contact-item">
+                                <div class="contact-icon">
+                                    <i class="fab fa-facebook"></i>
+                                </div>
+                                <span>Kelsarentals</span>
+                            </div>
+                            <div class="contact-item">
+                                <div class="contact-icon">
+                                    <i class="fab fa-instagram"></i>
+                                </div>
+                                <span>@kelsaevents</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="footer-bottom-accent"></div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Loading Overlay -->
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="loading-content">
+            <div class="loading-spinner"></div>
+            <p>Generating PDF...</p>
+        </div>
+    </div>
+
+    <script src="preview.js"></script>
+</body>
+</html>
